@@ -1,0 +1,320 @@
+/* ============================================
+   3D TUNNEL — VIEWPORT & SCENE
+   ============================================ */
+.tunnel-viewport {
+  position: fixed;
+  inset: 0;
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tunnel-scene {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* The scroll runway — invisible, just captures scroll */
+.scroll-runway {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  pointer-events: auto;
+}
+
+/* ============================================
+   TUNNEL BACKGROUND — atmospheric depth
+   ============================================ */
+.tunnel-atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  transition: background 1.2s ease;
+  pointer-events: none;
+}
+
+/* Converging guide lines for tunnel depth feel */
+.tunnel-lines {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.tunnel-lines::before,
+.tunnel-lines::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 1px;
+  height: 200vh;
+  transform-origin: top center;
+  opacity: 0.04;
+  background: linear-gradient(to bottom, transparent, var(--era-accent), transparent);
+}
+.tunnel-lines::before {
+  left: 30%;
+  transform: translateY(-50%) perspective(600px) rotateY(2deg);
+}
+.tunnel-lines::after {
+  right: 30%;
+  transform: translateY(-50%) perspective(600px) rotateY(-2deg);
+}
+
+/* ============================================
+   3D ERA HEADER
+   ============================================ */
+.tunnel-era-header {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  text-align: center;
+  pointer-events: none;
+  width: 80vw;
+  max-width: 700px;
+}
+
+.tunnel-era-header .era-number {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--era-accent);
+  margin-bottom: 12px;
+}
+.tunnel-era-header .era-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  color: #f0ece6;
+  margin-bottom: 12px;
+  text-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+.tunnel-era-header .era-date-range {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   3D EVENT CARD
+   ============================================ */
+.tunnel-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(520px, 80vw);
+  transform-style: preserve-3d;
+  pointer-events: none;
+  padding: 32px 36px;
+  border-radius: 12px;
+  background: rgba(14, 14, 20, 0.85);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  transition: border-color 0.6s ease;
+}
+.tunnel-card.in-focus {
+  pointer-events: auto;
+  border-color: var(--era-accent);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 30px var(--era-glow);
+}
+
+.tunnel-card .event-date {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--era-accent);
+  margin-bottom: 6px;
+}
+
+.tunnel-card h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+  font-weight: 700;
+  color: #f0ece6;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.tunnel-card .event-desc {
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  margin-bottom: 10px;
+  opacity: 0.88;
+}
+
+.tunnel-card .scripture-ref {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.78rem;
+  color: var(--text-scripture);
+  margin-bottom: 6px;
+}
+
+.tunnel-card .prophetic-note {
+  font-size: 0.8rem;
+  color: var(--era-accent);
+  padding-left: 12px;
+  border-left: 2px solid var(--era-accent);
+  opacity: 0.85;
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* ============================================
+   NODE INDICATOR (dot on spine in 3D)
+   ============================================ */
+.tunnel-card::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--era-accent);
+  box-shadow: 0 0 8px var(--era-glow);
+  opacity: 0.6;
+}
+.tunnel-card.in-focus::before {
+  opacity: 1;
+  box-shadow: 0 0 12px var(--era-glow), 0 0 24px var(--era-glow);
+}
+
+/* ============================================
+   DEPTH INDICATOR (which event you're on)
+   ============================================ */
+.depth-indicator {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+.depth-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.depth-dot.active {
+  background: var(--era-accent);
+  transform: scale(1.6);
+  box-shadow: 0 0 8px var(--era-glow);
+}
+.depth-dot.era-marker {
+  width: 8px;
+  height: 8px;
+  margin: 4px 0;
+}
+
+/* ============================================
+   TUNNEL HERO
+   ============================================ */
+.tunnel-hero {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  text-align: center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.tunnel-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: #f0ece6;
+  margin-bottom: 20px;
+  text-shadow: 0 0 60px rgba(0,0,0,0.9);
+}
+.tunnel-hero .subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin: 0 auto 40px;
+}
+.tunnel-hero .scroll-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: pulse-down 2.5s ease-in-out infinite;
+}
+.tunnel-hero .scroll-hint span {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.2rem;
+  animation: bob 2.5s ease-in-out infinite;
+}
+
+/* ============================================
+   TUNNEL CLOSING
+   ============================================ */
+.tunnel-closing {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  text-align: center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  width: min(600px, 80vw);
+}
+.tunnel-closing blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-style: italic;
+  color: var(--text-primary);
+  margin: 0 auto 20px;
+  opacity: 0.85;
+  line-height: 1.6;
+  text-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+.tunnel-closing cite {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+/* ============================================
+   MOBILE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 768px) {
+  .tunnel-card {
+    width: min(420px, 88vw);
+    padding: 24px 20px;
+  }
+  .tunnel-viewport {
+    perspective: 900px;
+  }
+  .depth-indicator {
+    right: 10px;
+  }
+  .depth-dot { width: 4px; height: 4px; }
+  .depth-dot.era-marker { width: 6px; height: 6px; }
+}
