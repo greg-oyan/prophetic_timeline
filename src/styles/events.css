@@ -1,0 +1,144 @@
+/* ============================================
+   TIMELINE SPINE
+   ============================================ */
+.events-container {
+  position: relative;
+  padding: 40px 24px 40px var(--spine-left);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.events-container::before {
+  content: '';
+  position: absolute;
+  left: var(--spine-left);
+  top: 0;
+  bottom: 0;
+  width: var(--spine-width);
+  background: var(--era-accent);
+  opacity: 0.25;
+}
+
+/* ============================================
+   EVENT CARDS
+   ============================================ */
+.event-card {
+  position: relative;
+  margin-bottom: 64px;
+  padding-left: 48px;
+  max-width: var(--card-max-width);
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.event-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Node on spine */
+.event-card::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 8px;
+  width: var(--node-size);
+  height: var(--node-size);
+  background: var(--bg-deep);
+  border: 2px solid var(--era-accent);
+  border-radius: 50%;
+  z-index: 2;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.event-card.revealed::before {
+  background: var(--era-accent);
+  box-shadow: 0 0 12px var(--era-glow), 0 0 24px var(--era-glow);
+}
+
+/* Connector line from node to card */
+.event-card::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 14px;
+  width: 34px;
+  height: 1px;
+  background: var(--era-accent);
+  opacity: 0.3;
+}
+
+.event-card .event-date {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--era-accent);
+  margin-bottom: 6px;
+}
+
+.event-card h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  font-weight: 700;
+  color: #f0ece6;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.event-card .event-desc {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  opacity: 0.88;
+}
+
+.event-card .scripture-ref {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--text-scripture);
+  margin-bottom: 8px;
+}
+
+.event-card .prophetic-note {
+  font-size: 0.85rem;
+  color: var(--era-accent);
+  padding-left: 14px;
+  border-left: 2px solid var(--era-accent);
+  opacity: 0.85;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* ============================================
+   KEYBOARD FOCUS
+   ============================================ */
+.event-card:focus-visible {
+  outline: 2px solid var(--era-accent);
+  outline-offset: 8px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   MOBILE
+   ============================================ */
+@media (max-width: 768px) {
+  .events-container {
+    padding-left: var(--spine-left);
+    padding-right: 16px;
+  }
+  .event-card {
+    padding-left: 32px;
+    margin-bottom: 48px;
+  }
+  .event-card::after { width: 20px; }
+  .event-card::before {
+    left: -6px;
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-card { margin-bottom: 40px; }
+}

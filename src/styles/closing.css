@@ -1,0 +1,42 @@
+/* ============================================
+   CLOSING / FOOTER
+   ============================================ */
+.closing {
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+}
+.closing::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--era-accent), transparent);
+  opacity: 0.3;
+}
+.closing blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-style: italic;
+  color: var(--text-primary);
+  max-width: 600px;
+  margin: 0 auto 20px;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+.closing cite {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}

@@ -1,0 +1,62 @@
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0a0a0f;
+  --text-primary: #e8e4df;
+  --text-muted: #8a8580;
+  --text-scripture: #9a9590;
+  --spine-width: 2px;
+  --spine-left: 60px;
+  --node-size: 14px;
+  --card-max-width: 640px;
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --era-accent: #c8a96e;
+  --era-glow: rgba(200,169,110,0.15);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg-deep);
+  min-height: 100vh;
+}
+
+/* ============================================
+   NOISE / GRAIN OVERLAY
+   ============================================ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --spine-left: 30px;
+    --node-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 16px; }
+}
