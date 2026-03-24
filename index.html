@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Prophetic Timeline — From Creation to the New Creation</title>
+<meta property="og:title" content="The Prophetic Timeline — From Creation to the New Creation">
+<meta property="og:description" content="An immersive visual journey through Biblical prophetic history. 42 events from Genesis to Revelation, with scripture references and prophetic connections.">
+<meta property="og:type" content="website">
+<meta name="description" content="An interactive, cinematic timeline of Biblical prophecy from Creation through the Fall of the Temple (70 AD) to the Second Coming. 42 events with scripture references.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #0a0a0f;
+  --text-primary: #e8e4df;
+  --text-muted: #8a8580;
+  --text-scripture: #9a9590;
+  --spine-width: 2px;
+  --spine-left: 60px;
+  --node-size: 14px;
+  --card-max-width: 640px;
+  --font-display: 'Cormorant Garamond', 'Georgia', serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+  /* Era colors — set dynamically per section */
+  --era-accent: #c8a96e;
+  --era-glow: rgba(200,169,110,0.15);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 18px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--bg-deep);
+  min-height: 100vh;
+}
+
+/* ============================================
+   NOISE / GRAIN OVERLAY
+   ============================================ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+}
+
+/* ============================================
+   SCROLL PROGRESS BAR
+   ============================================ */
+#scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: var(--era-accent);
+  z-index: 10001;
+  transition: background 0.6s ease;
+}
+
+/* ============================================
+   STICKY NAV
+   ============================================ */
+#sticky-nav {
+  position: fixed;
+  top: 3px; left: 0; right: 0;
+  height: 44px;
+  background: rgba(10,10,15,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-family: var(--font-display);
+  transform: translateY(-100%);
+  transition: transform 0.4s ease, background 0.6s ease;
+}
+#sticky-nav.visible { transform: translateY(0); }
+
+#current-era-btn {
+  background: none;
+  border: none;
+  color: var(--era-accent);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.3s;
+}
+#current-era-btn:hover { background: rgba(255,255,255,0.06); }
+
+#era-dropdown {
+  position: fixed;
+  top: 47px;
+  left: 20px;
+  background: rgba(14,14,20,0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 8px 0;
+  z-index: 10002;
+  display: none;
+  min-width: 280px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+#era-dropdown.open { display: block; }
+
+#era-dropdown a {
+  display: block;
+  padding: 10px 20px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: background 0.15s;
+}
+#era-dropdown a:hover {
+  background: rgba(255,255,255,0.06);
+}
+#era-dropdown a .era-date {
+  float: right;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.75rem;
+}
+
+/* ============================================
+   HERO / INTRO SECTION
+   ============================================ */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(40,35,50,0.5) 0%, var(--bg-deep) 70%);
+  overflow: hidden;
+}
+#hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(200,169,110,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+#hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: #f0ece6;
+  margin-bottom: 20px;
+}
+#hero .subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin-bottom: 40px;
+}
+#hero .scroll-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  animation: pulse-down 2.5s ease-in-out infinite;
+}
+#hero .scroll-hint span {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.2rem;
+  animation: bob 2.5s ease-in-out infinite;
+}
+@keyframes pulse-down { 0%,100%{ opacity:0.4; } 50%{ opacity:0.8; } }
+@keyframes bob { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(6px); } }
+
+/* ============================================
+   ERA SECTIONS
+   ============================================ */
+.era-section {
+  position: relative;
+  padding: 0 0 80px 0;
+}
+
+/* Era header — full viewport atmospheric */
+.era-header {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  overflow: hidden;
+}
+
+/* Vignette on era headers */
+.era-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(10,10,15,0.7) 100%);
+  pointer-events: none;
+}
+
+.era-header .era-number {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--era-accent);
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.era-header .era-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  color: #f0ece6;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease 0.15s, transform 1s ease 0.15s;
+}
+.era-header .era-date-range {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease 0.3s, transform 0.8s ease 0.3s;
+}
+
+.era-header.revealed .era-number,
+.era-header.revealed .era-title,
+.era-header.revealed .era-date-range {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Era-specific atmospheric backgrounds */
+/* Era 1: Creation — deep emerald, golden light */
+.era-creation .era-header {
+  background: linear-gradient(180deg, #0a1a10 0%, #0d2818 30%, #1a3520 50%, #0f1f12 80%, var(--bg-deep) 100%);
+}
+.era-creation .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(200,180,80,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.era-creation { --era-accent: #7db870; --era-glow: rgba(125,184,112,0.12); }
+
+/* Era 2: Patriarchs — desert golds, amber */
+.era-patriarchs .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #1a1508 20%, #2a1f0a 40%, #1f1a0c 70%, var(--bg-deep) 100%);
+}
+.era-patriarchs .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 35%, rgba(210,170,80,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+.era-patriarchs { --era-accent: #c8a96e; --era-glow: rgba(200,169,110,0.12); }
+
+/* Era 3: Exodus — crimson, bronze, fire */
+.era-exodus .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #1f0a08 20%, #2a1210 40%, #1a0e0c 70%, var(--bg-deep) 100%);
+}
+.era-exodus .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(200,80,40,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+.era-exodus { --era-accent: #c06040; --era-glow: rgba(192,96,64,0.12); }
+
+/* Era 4: Kingdom — royal purple, deep blue, gold */
+.era-kingdom .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #140e24 20%, #1a1230 40%, #120e20 70%, var(--bg-deep) 100%);
+}
+.era-kingdom .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 35%, rgba(140,100,200,0.08) 0%, transparent 55%);
+  pointer-events: none;
+}
+.era-kingdom { --era-accent: #9b7ed8; --era-glow: rgba(155,126,216,0.12); }
+
+/* Era 5: Exile — ash grey, cold blue, candlelight */
+.era-exile .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #10121a 20%, #161a24 40%, #0e1018 70%, var(--bg-deep) 100%);
+}
+.era-exile .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(180,160,120,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.era-exile { --era-accent: #8a9aaa; --era-glow: rgba(138,154,170,0.12); }
+
+/* Era 6: Life of Christ — warm whites, soft gold, dawn */
+.era-christ .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #1a1610 20%, #242018 40%, #1a1812 70%, var(--bg-deep) 100%);
+}
+.era-christ .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,220,160,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+.era-christ { --era-accent: #e0c080; --era-glow: rgba(224,192,128,0.12); }
+
+/* Era 7: Destruction — orange-red, smoke, ember */
+.era-destruction .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #1a0c06 20%, #2a1008 40%, #160a04 70%, var(--bg-deep) 100%);
+}
+.era-destruction .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 40%, rgba(220,100,30,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+.era-destruction { --era-accent: #d07030; --era-glow: rgba(208,112,48,0.12); }
+
+/* Era 8: Second Coming — blazing white, cosmic gold */
+.era-secondcoming .era-header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, #14141e 20%, #1e1e30 40%, #18182a 70%, var(--bg-deep) 100%);
+}
+.era-secondcoming .era-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255,240,200,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+.era-secondcoming { --era-accent: #f0d880; --era-glow: rgba(240,216,128,0.15); }
+
+/* ============================================
+   TIMELINE SPINE
+   ============================================ */
+.events-container {
+  position: relative;
+  padding: 40px 24px 40px var(--spine-left);
+  max-width: 900px;
+  margin: 0 auto;
+}
+/* Spine line */
+.events-container::before {
+  content: '';
+  position: absolute;
+  left: var(--spine-left);
+  top: 0;
+  bottom: 0;
+  width: var(--spine-width);
+  background: var(--era-accent);
+  opacity: 0.25;
+}
+
+/* ============================================
+   EVENT CARDS
+   ============================================ */
+.event-card {
+  position: relative;
+  margin-bottom: 64px;
+  padding-left: 48px;
+  max-width: var(--card-max-width);
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.event-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Node on spine */
+.event-card::before {
+  content: '';
+  position: absolute;
+  left: -7px;
+  top: 8px;
+  width: var(--node-size);
+  height: var(--node-size);
+  background: var(--bg-deep);
+  border: 2px solid var(--era-accent);
+  border-radius: 50%;
+  z-index: 2;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.event-card.revealed::before {
+  background: var(--era-accent);
+  box-shadow: 0 0 12px var(--era-glow), 0 0 24px var(--era-glow);
+}
+
+/* Connector line from node to card */
+.event-card::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 14px;
+  width: 34px;
+  height: 1px;
+  background: var(--era-accent);
+  opacity: 0.3;
+}
+
+.event-card .event-date {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--era-accent);
+  margin-bottom: 6px;
+}
+
+.event-card h3 {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  font-weight: 700;
+  color: #f0ece6;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.event-card .event-desc {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  opacity: 0.88;
+}
+
+.event-card .scripture-ref {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--text-scripture);
+  margin-bottom: 8px;
+}
+
+.event-card .prophetic-note {
+  font-size: 0.85rem;
+  color: var(--era-accent);
+  padding-left: 14px;
+  border-left: 2px solid var(--era-accent);
+  opacity: 0.85;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* ============================================
+   DATE MARKERS ON SPINE
+   ============================================ */
+.spine-date {
+  position: relative;
+  padding-left: 48px;
+  margin-bottom: 20px;
+  margin-top: -8px;
+}
+.spine-date span {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-deep);
+  padding: 2px 8px;
+  position: relative;
+}
+.spine-date::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--era-accent);
+  opacity: 0.5;
+}
+
+/* ============================================
+   CLOSING / FOOTER
+   ============================================ */
+#closing {
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+}
+#closing::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--era-accent), transparent);
+  opacity: 0.3;
+}
+#closing blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-style: italic;
+  color: var(--text-primary);
+  max-width: 600px;
+  margin: 0 auto 20px;
+  opacity: 0.85;
+  line-height: 1.6;
+}
+#closing cite {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  :root {
+    --spine-left: 30px;
+    --node-size: 12px;
+  }
+  .events-container {
+    padding-left: var(--spine-left);
+    padding-right: 16px;
+  }
+  .event-card {
+    padding-left: 32px;
+    margin-bottom: 48px;
+  }
+  .event-card::after {
+    width: 20px;
+  }
+  .event-card::before {
+    left: -6px;
+    width: 12px;
+    height: 12px;
+  }
+  .spine-date {
+    padding-left: 32px;
+  }
+  .era-header {
+    min-height: 55vh;
+    padding: 60px 20px;
+  }
+  #sticky-nav { padding: 0 12px; }
+  #era-dropdown { left: 12px; min-width: 260px; }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 16px; }
+  .era-header { min-height: 50vh; }
+  .event-card { margin-bottom: 40px; }
+}
+
+/* ============================================
+   KEYBOARD FOCUS OUTLINE
+   ============================================ */
+.event-card:focus-visible {
+  outline: 2px solid var(--era-accent);
+  outline-offset: 8px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   PARALLAX LAYERS (subtle on backgrounds)
+   ============================================ */
+.parallax-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+.parallax-bg .layer {
+  position: absolute;
+  inset: -20%;
+  will-change: transform;
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll progress bar -->
+<div id="scroll-progress"></div>
+
+<!-- Sticky nav -->
+<nav id="sticky-nav">
+  <button id="current-era-btn" aria-expanded="false" aria-controls="era-dropdown">Creation &amp; The Fall</button>
+</nav>
+<div id="era-dropdown" role="menu">
+  <a href="#era-1" role="menuitem">Creation &amp; The Fall <span class="era-date">~4000+ BC</span></a>
+  <a href="#era-2" role="menuitem">The Patriarchs <span class="era-date">~2000-1800 BC</span></a>
+  <a href="#era-3" role="menuitem">Exodus &amp; Wilderness <span class="era-date">~1446-1406 BC</span></a>
+  <a href="#era-4" role="menuitem">Conquest &amp; The Kingdom <span class="era-date">~1406-586 BC</span></a>
+  <a href="#era-5" role="menuitem">Exile &amp; The Prophets <span class="era-date">~586-400 BC</span></a>
+  <a href="#era-6" role="menuitem">The Life of Christ <span class="era-date">~6 BC - 33 AD</span></a>
+  <a href="#era-7" role="menuitem">Early Church &amp; Destruction <span class="era-date">~33-70 AD</span></a>
+  <a href="#era-8" role="menuitem">The Second Coming <span class="era-date">Future</span></a>
+</div>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+  <h1>The Prophetic Timeline</h1>
+  <p class="subtitle">From Creation to the New Creation &mdash; an immersive journey through Biblical prophetic history</p>
+  <div class="scroll-hint">
+    Begin the journey
+    <span>&darr;</span>
+  </div>
+</section>
+
+<!-- ==================== ERA 1: CREATION & THE FALL ==================== -->
+<section id="era-1" class="era-section era-creation" data-era="Creation &amp; The Fall">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era I</span>
+    <h2 class="era-title">Creation &amp; The Fall</h2>
+    <p class="era-date-range">~4000+ BC</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">In the Beginning</span>
+      <h3>Creation</h3>
+      <p class="event-desc">God creates the heavens, the earth, and humanity. The world begins in perfection &mdash; light divided from darkness, land from sea, and man formed from dust and given the breath of life.</p>
+      <p class="scripture-ref">Genesis 1&ndash;2</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The First Sin</span>
+      <h3>The Fall</h3>
+      <p class="event-desc">Adam and Eve disobey God, and sin enters the world. In the curse upon the serpent, God speaks the first prophecy: the woman's offspring will crush the serpent's head.</p>
+      <p class="scripture-ref">Genesis 3</p>
+      <p class="prophetic-note">The Protoevangelium &mdash; Genesis 3:15 is the first Messianic prophecy, foretelling Christ's ultimate victory over evil.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The First Murder</span>
+      <h3>Cain and Abel</h3>
+      <p class="event-desc">Cain kills his brother Abel &mdash; the first murder in human history. The consequences of the Fall begin to unfold in fratricide and exile.</p>
+      <p class="scripture-ref">Genesis 4</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">Judgment &amp; Mercy</span>
+      <h3>Noah and the Flood</h3>
+      <p class="event-desc">God judges a corrupt world through a catastrophic flood, but preserves a remnant through Noah and his family. After the waters recede, God establishes a covenant sealed by the rainbow &mdash; never again will He destroy the earth by water.</p>
+      <p class="scripture-ref">Genesis 6&ndash;9</p>
+      <p class="prophetic-note">The pattern of judgment-yet-preservation through a remnant recurs throughout Scripture and points to ultimate salvation through Christ.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 2: THE PATRIARCHS ==================== -->
+<section id="era-2" class="era-section era-patriarchs" data-era="The Patriarchs">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era II</span>
+    <h2 class="era-title">The Patriarchs</h2>
+    <p class="era-date-range">~2000&ndash;1800 BC</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~2000 BC</span>
+      <h3>The Call of Abraham</h3>
+      <p class="event-desc">God calls Abram out of Ur and makes an extraordinary promise: a great nation, a blessed name, and through him, blessing for all the nations of the earth. The entire prophetic narrative pivots on this covenant.</p>
+      <p class="scripture-ref">Genesis 12:1&ndash;3</p>
+      <p class="prophetic-note">The Abrahamic Covenant &mdash; the foundation of Israel's identity and the promise that all nations will be blessed through Abraham's line, fulfilled in Christ.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">Covenant Sign</span>
+      <h3>The Covenant of Circumcision</h3>
+      <p class="event-desc">God establishes circumcision as the sign of His covenant, renames Abram to Abraham ("father of many"), and promises a son through Sarah despite their old age.</p>
+      <p class="scripture-ref">Genesis 17</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The Ultimate Test</span>
+      <h3>The Binding of Isaac</h3>
+      <p class="event-desc">God commands Abraham to sacrifice his son Isaac on Mount Moriah. Abraham obeys, and at the last moment God provides a ram as substitute. "On the mountain of the LORD it will be provided."</p>
+      <p class="scripture-ref">Genesis 22</p>
+      <p class="prophetic-note">The Akedah &mdash; Abraham's willingness to sacrifice his only son prefigures God's sacrifice of His own Son. The ram caught in the thicket foreshadows substitutionary atonement.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The Twelve Tribes</span>
+      <h3>Jacob and the Twelve Tribes</h3>
+      <p class="event-desc">Jacob, renamed Israel after wrestling with God, fathers twelve sons who become the twelve tribes of Israel. The nation promised to Abraham begins to take physical shape.</p>
+      <p class="scripture-ref">Genesis 25&ndash;35</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~1876 BC</span>
+      <h3>Joseph in Egypt</h3>
+      <p class="event-desc">Sold into slavery by his brothers, Joseph rises to become second-in-command of Egypt. He preserves the family of Israel through a devastating famine. "You meant it for evil, but God meant it for good."</p>
+      <p class="scripture-ref">Genesis 37&ndash;50</p>
+      <p class="prophetic-note">Joseph's story &mdash; betrayed, sold, falsely accused, exalted, and ultimately saving his people &mdash; is one of Scripture's richest types of Christ.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 3: EXODUS & WILDERNESS ==================== -->
+<section id="era-3" class="era-section era-exodus" data-era="Exodus &amp; Wilderness">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era III</span>
+    <h2 class="era-title">Exodus &amp; Wilderness</h2>
+    <p class="era-date-range">~1446&ndash;1406 BC</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~1446 BC</span>
+      <h3>The Burning Bush</h3>
+      <p class="event-desc">God reveals Himself to Moses from a bush that burns but is not consumed. He declares His name &mdash; "I AM WHO I AM" &mdash; and commissions Moses to deliver Israel from 400 years of Egyptian bondage.</p>
+      <p class="scripture-ref">Exodus 3</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">Judgment on Egypt</span>
+      <h3>The Ten Plagues</h3>
+      <p class="event-desc">God strikes Egypt with ten plagues of increasing severity &mdash; from water turned to blood to the death of every firstborn. Each plague demonstrates His sovereignty over Egypt's gods and Pharaoh's defiance.</p>
+      <p class="scripture-ref">Exodus 7&ndash;12</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The Lamb's Blood</span>
+      <h3>The Passover</h3>
+      <p class="event-desc">Each Israelite household slaughters a lamb and paints its blood on the doorposts. The angel of death passes over every home so marked, striking only the unmarked houses of Egypt. Israel is delivered through the blood of the lamb.</p>
+      <p class="scripture-ref">Exodus 12</p>
+      <p class="prophetic-note">"Christ our Passover has been sacrificed for us" (1 Corinthians 5:7). The Passover lamb is the foundational prophetic type of Christ's atoning death.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">Deliverance</span>
+      <h3>The Crossing of the Red Sea</h3>
+      <p class="event-desc">With Pharaoh's army closing in, God parts the Red Sea. Israel crosses on dry ground. The waters close over the pursuing Egyptian chariots. A defining moment of divine rescue in Israel's memory.</p>
+      <p class="scripture-ref">Exodus 14</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The Law Given</span>
+      <h3>The Covenant at Sinai</h3>
+      <p class="event-desc">At Mount Sinai, God descends in fire and thunder. He gives Moses the Torah &mdash; the Law &mdash; including the Ten Commandments. The Mosaic Covenant establishes Israel as a holy nation under God's direct rule.</p>
+      <p class="scripture-ref">Exodus 19&ndash;24</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">God Dwells Among His People</span>
+      <h3>The Tabernacle</h3>
+      <p class="event-desc">God instructs Moses to build a portable sanctuary &mdash; the Tabernacle &mdash; where His presence will dwell among His people in the wilderness. Every material, measurement, and ritual points forward to a greater reality.</p>
+      <p class="scripture-ref">Exodus 25&ndash;40</p>
+      <p class="prophetic-note">The Tabernacle's design &mdash; the veil, the mercy seat, the sacrificial altar &mdash; foreshadows Christ, through whom God's presence dwells among humanity (John 1:14).</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 4: CONQUEST & THE KINGDOM ==================== -->
+<section id="era-4" class="era-section era-kingdom" data-era="Conquest &amp; The Kingdom">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era IV</span>
+    <h2 class="era-title">Conquest &amp; The Kingdom</h2>
+    <p class="era-date-range">~1406&ndash;586 BC</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~1406 BC</span>
+      <h3>Entry into the Promised Land</h3>
+      <p class="event-desc">Under Joshua's command, Israel crosses the Jordan River and begins to take possession of the land God promised to Abraham centuries earlier. The long journey from slavery to homeland reaches its fulfillment.</p>
+      <p class="scripture-ref">Joshua 1&ndash;4</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~1380&ndash;1050 BC</span>
+      <h3>The Judges</h3>
+      <p class="event-desc">A dark cycle repeats for centuries: Israel rebels, is oppressed by enemies, cries out, and God raises a judge to deliver them. Each cycle spirals deeper. The era ends with a bleak refrain: "Everyone did what was right in his own eyes."</p>
+      <p class="scripture-ref">Judges</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~1000 BC</span>
+      <h3>The Davidic Covenant</h3>
+      <p class="event-desc">God makes an eternal promise to King David: "Your house and your kingdom shall endure before Me forever; your throne shall be established forever." An everlasting dynasty, a throne without end.</p>
+      <p class="scripture-ref">2 Samuel 7:12&ndash;16</p>
+      <p class="prophetic-note">The Davidic Covenant is the foundation of all Messianic kingship prophecy. Jesus is repeatedly called "Son of David" &mdash; the rightful heir to this eternal throne.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~960 BC</span>
+      <h3>Solomon's Temple</h3>
+      <p class="event-desc">King Solomon builds a magnificent Temple in Jerusalem. At its dedication, the glory of the LORD fills the house so powerfully that the priests cannot stand to minister. For nearly 400 years, it will be the center of Israel's worship.</p>
+      <p class="scripture-ref">1 Kings 6&ndash;8</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~930 BC</span>
+      <h3>The Divided Kingdom</h3>
+      <p class="event-desc">After Solomon's death, his son Rehoboam's harshness splits the nation: ten tribes form the northern kingdom of Israel, while Judah and Benjamin remain in the south. A long, catastrophic decline begins for both kingdoms.</p>
+      <p class="scripture-ref">1 Kings 12</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~860 BC</span>
+      <h3>Elijah and the Prophets of Baal</h3>
+      <p class="event-desc">On Mount Carmel, Elijah challenges 450 prophets of Baal to a contest of divine power. Baal answers nothing. Then fire from heaven consumes Elijah's sacrifice, the altar, and even the water in the trench. The people fall on their faces: "The LORD, He is God!"</p>
+      <p class="scripture-ref">1 Kings 18</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~700 BC</span>
+      <h3>Isaiah's Messianic Prophecies</h3>
+      <p class="event-desc">The prophet Isaiah delivers a series of extraordinary prophecies: a virgin will conceive (7:14), a child will be born who is called "Mighty God, Everlasting Father" (9:6), and a suffering servant will bear the sins of many, pierced for our transgressions (53). Written seven centuries before Christ.</p>
+      <p class="scripture-ref">Isaiah 7, 9, 11, 53</p>
+      <p class="prophetic-note">Isaiah 53 is one of the most detailed and specific Messianic prophecies in all of Scripture &mdash; describing Christ's suffering, rejection, and atoning death centuries before the crucifixion.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">722 BC</span>
+      <h3>The Fall of the Northern Kingdom</h3>
+      <p class="event-desc">Assyria conquers the northern kingdom of Israel. The ten northern tribes are scattered and absorbed into foreign nations. Centuries of idolatry reach their consequence. The northern kingdom is gone.</p>
+      <p class="scripture-ref">2 Kings 17</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 5: EXILE & THE PROPHETS ==================== -->
+<section id="era-5" class="era-section era-exile" data-era="Exile &amp; The Prophets">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era V</span>
+    <h2 class="era-title">Exile &amp; The Prophets</h2>
+    <p class="era-date-range">~586&ndash;400 BC</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">586 BC</span>
+      <h3>The Fall of Jerusalem</h3>
+      <p class="event-desc">Babylon under Nebuchadnezzar destroys Jerusalem and Solomon's Temple. The people of Judah are taken into exile. The Ark of the Covenant disappears from history. It is the darkest hour of the Old Testament.</p>
+      <p class="scripture-ref">2 Kings 25</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~605&ndash;535 BC</span>
+      <h3>Daniel in Babylon</h3>
+      <p class="event-desc">Daniel and his companions &mdash; Shadrach, Meshach, and Abednego &mdash; maintain their faithfulness to God under pagan rule. The fiery furnace. The lion's den. Their stories become enduring portraits of courage under empire.</p>
+      <p class="scripture-ref">Daniel 1&ndash;6</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~553&ndash;539 BC</span>
+      <h3>Daniel's Prophetic Visions</h3>
+      <p class="event-desc">Daniel receives visions of staggering scope: Nebuchadnezzar's statue depicting four world empires, the Son of Man coming on clouds to receive an everlasting dominion, and the prophecy of 70 weeks &mdash; a precise timeline pointing to the Messiah's coming and the destruction of the city and sanctuary.</p>
+      <p class="scripture-ref">Daniel 2, 7, 9</p>
+      <p class="prophetic-note">Daniel 9:24&ndash;27 (the "70 Weeks") is one of the most specific prophetic timestamps in all of Scripture, calculating the approximate year of the Messiah's public appearance.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">538 BC</span>
+      <h3>The Return from Exile</h3>
+      <p class="event-desc">Cyrus of Persia decrees that the Jews may return to Jerusalem and rebuild the Temple. After 70 years of captivity &mdash; exactly as Jeremiah prophesied &mdash; a remnant makes the long journey home.</p>
+      <p class="scripture-ref">Ezra 1</p>
+      <p class="prophetic-note">Fulfillment of Jeremiah 25:11&ndash;12 &mdash; God declared 70 years of exile for Judah, and 70 years later, to the generation, the return begins.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">516 BC</span>
+      <h3>The Second Temple</h3>
+      <p class="event-desc">The Temple is rebuilt, though those who remembered Solomon's Temple weep at its diminished glory. Yet Haggai prophesies: "The glory of this latter house shall be greater than the former." A promise that will be fulfilled in an unexpected way.</p>
+      <p class="scripture-ref">Ezra 6; Haggai 2:9</p>
+      <p class="prophetic-note">Haggai's prophecy is fulfilled when Jesus &mdash; God incarnate &mdash; walks the courts of this very Temple, filling it with a glory beyond gold and stone.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~400&ndash;6 BC</span>
+      <h3>The Intertestamental Silence</h3>
+      <p class="event-desc">The prophetic voice goes silent for 400 years. No new Scripture. No new prophet. Israel passes under Persian, Greek, and Roman rule. The world unknowingly waits for what Paul will call "the fullness of time."</p>
+      <p class="scripture-ref">Galatians 4:4</p>
+      <p class="prophetic-note">Four centuries of silence &mdash; and then, in an obscure corner of the Roman Empire, an angel appears to a young woman in Nazareth.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 6: THE LIFE OF CHRIST ==================== -->
+<section id="era-6" class="era-section era-christ" data-era="The Life of Christ">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era VI</span>
+    <h2 class="era-title">The Life of Christ</h2>
+    <p class="era-date-range">~6 BC &ndash; 33 AD</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~6&ndash;4 BC</span>
+      <h3>The Birth of Jesus</h3>
+      <p class="event-desc">In Bethlehem &mdash; fulfilling Micah's prophecy &mdash; a child is born of a virgin, fulfilling Isaiah's sign. Shepherds hear angels; magi follow a star. Herod rages. The long-awaited King arrives not in a palace but in a manger.</p>
+      <p class="scripture-ref">Matthew 1&ndash;2; Luke 1&ndash;2</p>
+      <p class="prophetic-note">Fulfills Micah 5:2 (born in Bethlehem), Isaiah 7:14 (born of a virgin), and Jeremiah 31:15 (Herod's massacre).</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~27 AD</span>
+      <h3>The Baptism of Jesus</h3>
+      <p class="event-desc">John baptizes Jesus in the Jordan River. The heavens open. The Spirit of God descends like a dove. The Father's voice thunders from heaven: "This is my beloved Son, in whom I am well pleased." The Trinity revealed in a single moment.</p>
+      <p class="scripture-ref">Matthew 3; Mark 1; Luke 3</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~27&ndash;30 AD</span>
+      <h3>The Ministry</h3>
+      <p class="event-desc">Three years that changed the world. The Sermon on the Mount. Parables that overturned every expectation. The blind see, the lame walk, the dead are raised. Jesus feeds thousands, walks on water, calms storms, and claims divine authority with the words "I AM."</p>
+      <p class="scripture-ref">The Gospels</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~30/33 AD</span>
+      <h3>The Triumphal Entry</h3>
+      <p class="event-desc">Jesus enters Jerusalem riding on a donkey, fulfilling Zechariah's ancient prophecy. Crowds line the road with palm branches, shouting "Hosanna to the Son of David!" The city that will reject him first receives him as king.</p>
+      <p class="scripture-ref">Matthew 21; John 12</p>
+      <p class="prophetic-note">Fulfills Zechariah 9:9 &mdash; "Behold, your king is coming to you, humble, and mounted on a donkey."</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">Thursday Night</span>
+      <h3>The Last Supper &amp; Gethsemane</h3>
+      <p class="event-desc">At a Passover meal, Jesus reinterprets the ancient feast: "This cup is the new covenant in my blood, which is poured out for you." Then in the Garden of Gethsemane, he prays in agony so intense his sweat falls like drops of blood. "Not my will, but yours be done."</p>
+      <p class="scripture-ref">Matthew 26; Luke 22</p>
+      <p class="prophetic-note">Jesus institutes the New Covenant prophesied in Jeremiah 31:31&ndash;34 &mdash; a covenant written not on stone but on hearts.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~30/33 AD, Friday</span>
+      <h3>The Crucifixion</h3>
+      <p class="event-desc">Jesus is crucified at Golgotha. Mocked, scourged, nailed to a cross between two criminals. He speaks seven final words. At the ninth hour he cries "It is finished" and breathes his last. The veil of the Temple is torn from top to bottom. The earth shakes. Access to God is thrown open.</p>
+      <p class="scripture-ref">Matthew 27; Mark 15; Luke 23; John 19</p>
+      <p class="prophetic-note">The Passover lamb is slain. The suffering servant of Isaiah 53 fulfills his mission. Psalm 22 is fulfilled in astonishing detail &mdash; written a millennium before crucifixion was invented.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">Sunday Morning</span>
+      <h3>The Resurrection</h3>
+      <p class="event-desc">On the third day, women come to the tomb and find it empty. Angels declare: "He is not here; He is risen." Jesus appears to the disciples &mdash; alive, bodily, bearing the scars of crucifixion. Death itself has been defeated. The foundation of the Christian faith stands or falls here.</p>
+      <p class="scripture-ref">Matthew 28; Mark 16; Luke 24; John 20</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~33 AD</span>
+      <h3>The Ascension &amp; Pentecost</h3>
+      <p class="event-desc">Forty days after the Resurrection, Jesus ascends to the right hand of the Father as the disciples watch. Ten days later, the Holy Spirit descends at Pentecost like a rushing wind and tongues of fire. The church is born. The disciples who fled in fear now preach boldly. Three thousand believe in a single day.</p>
+      <p class="scripture-ref">Acts 1&ndash;2</p>
+      <p class="prophetic-note">Fulfills Joel 2:28&ndash;32 &mdash; "I will pour out my Spirit on all flesh." The new era of the Spirit begins.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 7: EARLY CHURCH & DESTRUCTION ==================== -->
+<section id="era-7" class="era-section era-destruction" data-era="Early Church &amp; Destruction">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era VII</span>
+    <h2 class="era-title">The Early Church &amp; The Destruction</h2>
+    <p class="era-date-range">~33&ndash;70 AD</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~33&ndash;60 AD</span>
+      <h3>The Spread of the Gospel</h3>
+      <p class="event-desc">From a handful of disciples in Jerusalem, the gospel spreads across the Roman Empire. Paul's missionary journeys plant churches from Antioch to Rome. Persecution scatters believers &mdash; and the scattering only spreads the message further. Within a generation, the faith reaches the ends of the known world.</p>
+      <p class="scripture-ref">Acts</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">~30/33 AD (Prophecy Given)</span>
+      <h3>The Olivet Discourse</h3>
+      <p class="event-desc">Sitting on the Mount of Olives, Jesus looks across at the Temple and prophesies its total destruction: "Not one stone here will be left on another; every one will be thrown down." He describes the signs that will precede it and speaks of His eventual return.</p>
+      <p class="scripture-ref">Matthew 24; Mark 13; Luke 21</p>
+      <p class="prophetic-note">This prophecy will be fulfilled with devastating precision within 40 years, when the Romans destroy the Temple in 70 AD.</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">70 AD</span>
+      <h3>The Destruction of the Temple</h3>
+      <p class="event-desc">Roman general Titus besieges Jerusalem after a Jewish revolt. The city is starved, stormed, and burned. The Temple &mdash; the center of Jewish worship for a millennium &mdash; is set ablaze. Roman soldiers dismantle it stone by stone to recover the gold melted between the cracks. Jesus' prophecy is fulfilled exactly. The sacrificial system ends permanently.</p>
+      <p class="scripture-ref">Josephus, The Jewish War; cf. Matthew 24:2</p>
+      <p class="prophetic-note">Not one stone left on another &mdash; fulfilled precisely as Jesus foretold. The old covenant's central institution is gone. The new covenant stands.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== ERA 8: THE SECOND COMING ==================== -->
+<section id="era-8" class="era-section era-secondcoming" data-era="The Second Coming">
+  <div class="era-header">
+    <div class="parallax-bg"><div class="layer"></div></div>
+    <span class="era-number">Era VIII</span>
+    <h2 class="era-title">The Second Coming</h2>
+    <p class="era-date-range">Future &mdash; Outside Time</p>
+  </div>
+  <div class="events-container">
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The Promise</span>
+      <h3>The Promise of Return</h3>
+      <p class="event-desc">"This same Jesus, who has been taken from you into heaven, will come back in the same way you have seen Him go into heaven." "Behold, He is coming with the clouds, and every eye will see Him." The story is not over. The King will return.</p>
+      <p class="scripture-ref">Acts 1:11; Revelation 1:7</p>
+    </div>
+
+    <div class="event-card" tabindex="0">
+      <span class="event-date">The End &mdash; And the Beginning</span>
+      <h3>The New Heaven and New Earth</h3>
+      <p class="event-desc">"He will wipe every tear from their eyes. There will be no more death or mourning or crying or pain, for the old order of things has passed away." The tree of life from Genesis reappears. The story that began in a garden ends in a city. God dwells with His people forever.</p>
+      <p class="scripture-ref">Revelation 21&ndash;22</p>
+      <p class="prophetic-note">The prophetic arc of Scripture completes: from paradise lost to paradise restored, from the fall to final redemption, from the first Adam to the last.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CLOSING ==================== -->
+<section id="closing">
+  <blockquote>"He who testifies to these things says, 'Yes, I am coming soon.' Amen. Come, Lord Jesus."</blockquote>
+  <cite>&mdash; Revelation 22:20</cite>
+</section>
+
+<footer>
+  <p>The Prophetic Timeline &mdash; 42 events from Creation to the New Creation</p>
+  <p>All scripture references from the Bible. Dates follow mainstream scholarly consensus where available.</p>
+</footer>
+
+<script>
+/* ===========================================
+   SCROLL PROGRESS
+   =========================================== */
+const progressBar = document.getElementById('scroll-progress');
+const stickyNav = document.getElementById('sticky-nav');
+const eraBtn = document.getElementById('current-era-btn');
+const eraDropdown = document.getElementById('era-dropdown');
+const eraSections = document.querySelectorAll('.era-section');
+const eraHeaders = document.querySelectorAll('.era-header');
+const eventCards = document.querySelectorAll('.event-card');
+
+// Era accent colors (match CSS)
+const eraColors = {
+  'Creation & The Fall': '#7db870',
+  'The Patriarchs': '#c8a96e',
+  'Exodus & Wilderness': '#c06040',
+  'Conquest & The Kingdom': '#9b7ed8',
+  'Exile & The Prophets': '#8a9aaa',
+  'The Life of Christ': '#e0c080',
+  'Early Church & Destruction': '#d07030',
+  'The Second Coming': '#f0d880'
+};
+
+let currentEra = '';
+let ticking = false;
+
+function onScroll() {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    updateProgress();
+    updateCurrentEra();
+    ticking = false;
+  });
+}
+
+function updateProgress() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = progress + '%';
+
+  // Show/hide sticky nav after hero
+  if (scrollTop > window.innerHeight * 0.5) {
+    stickyNav.classList.add('visible');
+  } else {
+    stickyNav.classList.remove('visible');
+  }
+}
+
+function updateCurrentEra() {
+  const scrollCenter = window.scrollY + window.innerHeight * 0.4;
+  let active = '';
+  eraSections.forEach(section => {
+    const top = section.offsetTop;
+    const bottom = top + section.offsetHeight;
+    if (scrollCenter >= top && scrollCenter < bottom) {
+      active = section.getAttribute('data-era');
+    }
+  });
+  if (active && active !== currentEra) {
+    currentEra = active;
+    eraBtn.textContent = currentEra;
+    const color = eraColors[currentEra] || '#c8a96e';
+    document.documentElement.style.setProperty('--nav-accent', color);
+    eraBtn.style.color = color;
+    progressBar.style.background = color;
+  }
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+
+/* ===========================================
+   ERA DROPDOWN
+   =========================================== */
+eraBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const isOpen = eraDropdown.classList.toggle('open');
+  eraBtn.setAttribute('aria-expanded', isOpen);
+});
+
+document.addEventListener('click', () => {
+  eraDropdown.classList.remove('open');
+  eraBtn.setAttribute('aria-expanded', 'false');
+});
+
+eraDropdown.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    eraDropdown.classList.remove('open');
+    eraBtn.setAttribute('aria-expanded', 'false');
+  });
+});
+
+/* ===========================================
+   INTERSECTION OBSERVER — FADE IN
+   =========================================== */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+    }
+  });
+}, {
+  threshold: 0.15,
+  rootMargin: '0px 0px -60px 0px'
+});
+
+eventCards.forEach((card, i) => {
+  card.style.transitionDelay = (i % 3) * 0.08 + 's';
+  revealObserver.observe(card);
+});
+
+eraHeaders.forEach(header => {
+  revealObserver.observe(header);
+});
+
+/* ===========================================
+   PARALLAX (subtle)
+   =========================================== */
+function updateParallax() {
+  const scrollY = window.scrollY;
+  document.querySelectorAll('.parallax-bg .layer').forEach(layer => {
+    const section = layer.closest('.era-section') || layer.closest('#hero');
+    if (!section) return;
+    const rect = section.getBoundingClientRect();
+    // Only process if somewhat visible
+    if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
+    const offset = (rect.top / window.innerHeight) * -30;
+    layer.style.transform = `translateY(${offset}px)`;
+  });
+}
+
+window.addEventListener('scroll', () => {
+  requestAnimationFrame(updateParallax);
+}, { passive: true });
+
+/* ===========================================
+   KEYBOARD NAVIGATION
+   =========================================== */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    const cards = Array.from(eventCards);
+    const visibleCards = cards.filter(c => c.classList.contains('revealed'));
+    if (visibleCards.length === 0) return;
+
+    // Find current focused or topmost visible card
+    const focused = document.activeElement;
+    let idx = cards.indexOf(focused);
+
+    if (e.key === 'ArrowDown') {
+      idx = idx < 0 ? 0 : Math.min(idx + 1, cards.length - 1);
+    } else {
+      idx = idx < 0 ? 0 : Math.max(idx - 1, 0);
+    }
+
+    cards[idx].focus();
+    cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    e.preventDefault();
+  }
+});
+
+/* ===========================================
+   INIT
+   =========================================== */
+updateProgress();
+updateParallax();
+</script>
+</body>
+</html>
