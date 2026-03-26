@@ -1,62 +1,65 @@
-/* ============================================
-   RESET & BASE
-   ============================================ */
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
-  --bg-deep: #0a0a0f;
-  --text-primary: #e8e4df;
-  --text-muted: #8a8580;
-  --text-scripture: #9a9590;
-  --spine-width: 2px;
-  --spine-left: 60px;
-  --node-size: 14px;
-  --card-max-width: 640px;
+  --bg-deep: #07111f;
+  --bg-panel: rgba(7, 15, 28, 0.82);
+  --bg-panel-strong: rgba(6, 13, 24, 0.92);
+  --text-primary: #f3efe8;
+  --text-muted: #96a5bc;
+  --text-soft: #c6d1e0;
+  --line-soft: rgba(255, 255, 255, 0.08);
   --font-display: 'Cormorant Garamond', 'Georgia', serif;
   --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
   --era-accent: #c8a96e;
-  --era-glow: rgba(200,169,110,0.15);
 }
 
 html {
-  scroll-behavior: smooth;
-  background: var(--bg-deep);
+  background:
+    radial-gradient(circle at top, rgba(66, 132, 190, 0.12), transparent 32%),
+    linear-gradient(180deg, #08111e 0%, #091625 28%, #060b14 100%);
   color: var(--text-primary);
   font-family: var(--font-body);
   font-size: 18px;
-  line-height: 1.7;
+  line-height: 1.6;
+  scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
 body {
-  background: var(--bg-deep);
   min-height: 100vh;
+  background: transparent;
 }
 
-/* ============================================
-   NOISE / GRAIN OVERLAY
-   ============================================ */
-body::after {
+body::before {
   content: '';
   position: fixed;
   inset: 0;
-  z-index: 9999;
   pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 256px 256px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%),
+    radial-gradient(circle at 20% 20%, rgba(255, 226, 167, 0.06), transparent 20%);
+  z-index: 1;
 }
 
-/* ============================================
-   MOBILE RESPONSIVE
-   ============================================ */
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+}
+
+#root {
+  position: relative;
+  z-index: 2;
+}
+
 @media (max-width: 768px) {
-  :root {
-    --spine-left: 30px;
-    --node-size: 12px;
+  html {
+    font-size: 16px;
   }
-}
-
-@media (max-width: 480px) {
-  html { font-size: 16px; }
 }

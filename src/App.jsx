@@ -1,105 +1,228 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { eras } from './data/timeline';
-import ProgressBar from './components/ProgressBar';
-import Navigation from './components/Navigation';
-import Hero from './components/Hero';
-import EraSection from './components/EraSection';
-import Closing from './components/Closing';
-
+import React, {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { eras } from './data/timeline.js';
+import ProgressBar from './components/ProgressBar.jsx';
+import Navigation from './components/Navigation.jsx';
+import TimelineStage from './components/TimelineStage.jsx';
 import './styles/base.css';
 import './styles/navigation.css';
-import './styles/hero.css';
-import './styles/era.css';
-import './styles/events.css';
-import './styles/closing.css';
+import './styles/timeline-stage.css';
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const lanePattern = [-1, 1];
+
+function buildTimelineEvents() {
+  let eventIndex = 0;
+
+  return eras.flatMap((era, eraIndex) =>
+    era.events.map((event, indexInEra) => {
+      const lane = lanePattern[eventIndex % lanePattern.length];
+      const timelineEvent = {
+        ...event,
+        eraId: era.id,
+        eraName: era.name,
+        eraNumber: era.number,
+        eraAccent: era.accent,
+        eraGlow: era.glow,
+        eraClass: era.cssClass,
+        eraDateRange: era.dateRange,
+        eraIndex,
+        indexInEra,
+        index: eventIndex,
+        lane,
+      };
+
+      eventIndex += 1;
+      return timelineEvent;
+    })
+  );
+}
 
 export default function App() {
+  const stageSectionRef = useRef(null);
+  const timelineEvents = useMemo(buildTimelineEvents, []);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [journeyProgress, setJourneyProgress] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [expandedEventId, setExpandedEventId] = useState(null);
   const [currentEra, setCurrentEra] = useState(eras[0].name);
   const [navVisible, setNavVisible] = useState(false);
 
-  const accentColor =
-    eras.find((e) => e.name === currentEra)?.accent || '#c8a96e';
+  const currentEvent = timelineEvents[activeIndex] ?? timelineEvents[0];
+  const accentColor = currentEvent?.eraAccent ?? '#c8a96e';
 
-  const handleScroll = useCallback(() => {
+  const eraStops = useMemo(
+    () =>
+      eras.map((era) => ({
+        ...era,
+        eventIndex:
+          timelineEvents.find((event) => event.eraId === era.id)?.index ?? 0,
+      })),
+    [timelineEvents]
+  );
+
+  const syncScrollState = useCallback(() => {
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    setScrollProgress(progress);
-    setNavVisible(scrollTop > window.innerHeight * 0.5);
+    const pageProgress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    const stageSection = stageSectionRef.current;
 
-    // Determine current era
-    const scrollCenter = scrollTop + window.innerHeight * 0.4;
-    const sections = document.querySelectorAll('.era-section');
-    sections.forEach((section) => {
-      const top = section.offsetTop;
-      const bottom = top + section.offsetHeight;
-      if (scrollCenter >= top && scrollCenter < bottom) {
-        const name = section.getAttribute('data-era');
-        if (name) setCurrentEra(name);
-      }
-    });
-  }, []);
+    let nextJourneyProgress = 0;
 
-  // Parallax
-  const handleParallax = useCallback(() => {
-    document.querySelectorAll('.parallax-bg .layer').forEach((layer) => {
-      const section = layer.closest('.era-section');
-      if (!section) return;
-      const rect = section.getBoundingClientRect();
-      if (rect.bottom < -200 || rect.top > window.innerHeight + 200) return;
-      const offset = (rect.top / window.innerHeight) * -30;
-      layer.style.transform = `translateY(${offset}px)`;
+    if (stageSection) {
+      const sectionTop = stageSection.offsetTop;
+      const sectionHeight = stageSection.offsetHeight;
+      const maxScrollable = Math.max(sectionHeight - window.innerHeight, 1);
+      nextJourneyProgress = clamp(
+        (scrollTop - sectionTop) / maxScrollable,
+        0,
+        1
+      );
+    }
+
+    const nextIndex = Math.round(
+      nextJourneyProgress * (timelineEvents.length - 1)
+    );
+    const nextEvent = timelineEvents[nextIndex] ?? timelineEvents[0];
+
+    startTransition(() => {
+      setScrollProgress(pageProgress);
+      setJourneyProgress(nextJourneyProgress);
+      setActiveIndex(nextIndex);
+      setCurrentEra(nextEvent.eraName);
+      setNavVisible(scrollTop > window.innerHeight * 0.35);
     });
-  }, []);
+  }, [timelineEvents]);
 
   useEffect(() => {
-    const onScroll = () => {
-      requestAnimationFrame(() => {
-        handleScroll();
-        handleParallax();
+    let frameId = 0;
+
+    const handleViewportChange = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        syncScrollState();
       });
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [handleScroll, handleParallax]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const onKeyDown = (e) => {
-      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-      const cards = Array.from(document.querySelectorAll('.event-card'));
-      if (!cards.length) return;
+    window.addEventListener('scroll', handleViewportChange, { passive: true });
+    window.addEventListener('resize', handleViewportChange);
+    handleViewportChange();
 
-      const focused = document.activeElement;
-      let idx = cards.indexOf(focused);
-      if (e.key === 'ArrowDown') {
-        idx = idx < 0 ? 0 : Math.min(idx + 1, cards.length - 1);
-      } else {
-        idx = idx < 0 ? 0 : Math.max(idx - 1, 0);
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId);
       }
-      cards[idx].focus();
-      cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      e.preventDefault();
+      window.removeEventListener('scroll', handleViewportChange);
+      window.removeEventListener('resize', handleViewportChange);
     };
+  }, [syncScrollState]);
+
+  useEffect(() => {
+    if (expandedEventId == null) {
+      return;
+    }
+
+    const expandedIndex = timelineEvents.findIndex(
+      (event) => event.id === expandedEventId
+    );
+
+    if (expandedIndex >= 0 && expandedIndex !== activeIndex) {
+      setActiveIndex(expandedIndex);
+    }
+  }, [expandedEventId, activeIndex, timelineEvents]);
+
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+        return;
+      }
+
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      const nextIndex = clamp(
+        activeIndex + direction,
+        0,
+        timelineEvents.length - 1
+      );
+
+      if (nextIndex === activeIndex) {
+        return;
+      }
+
+      const stageSection = stageSectionRef.current;
+      if (!stageSection) {
+        return;
+      }
+
+      const maxScrollable = Math.max(stageSection.offsetHeight - window.innerHeight, 1);
+      const nextProgress = nextIndex / Math.max(timelineEvents.length - 1, 1);
+
+      window.scrollTo({
+        top: stageSection.offsetTop + maxScrollable * nextProgress,
+        behavior: 'smooth',
+      });
+      event.preventDefault();
+    };
+
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, []);
+  }, [activeIndex, timelineEvents.length]);
+
+  const jumpToEra = useCallback(
+    (eraId) => {
+      const stageSection = stageSectionRef.current;
+      if (!stageSection) {
+        return;
+      }
+
+      const targetEra = eraStops.find((era) => era.id === eraId);
+      if (!targetEra) {
+        return;
+      }
+
+      const maxScrollable = Math.max(stageSection.offsetHeight - window.innerHeight, 1);
+      const targetProgress =
+        targetEra.eventIndex / Math.max(timelineEvents.length - 1, 1);
+
+      window.scrollTo({
+        top: stageSection.offsetTop + maxScrollable * targetProgress,
+        behavior: 'smooth',
+      });
+    },
+    [eraStops, timelineEvents.length]
+  );
 
   return (
     <>
       <ProgressBar progress={scrollProgress} color={accentColor} />
       <Navigation
+        eras={eraStops}
         currentEra={currentEra}
+        currentEvent={currentEvent}
         visible={navVisible}
         accentColor={accentColor}
+        onJumpToEra={jumpToEra}
       />
-      <Hero />
-      {eras.map((era) => (
-        <EraSection key={era.id} era={era} />
-      ))}
-      <Closing />
+      <TimelineStage
+        ref={stageSectionRef}
+        events={timelineEvents}
+        eras={eraStops}
+        activeIndex={activeIndex}
+        progress={journeyProgress}
+        currentEvent={currentEvent}
+        expandedEventId={expandedEventId}
+        onToggleExpand={(eventId) =>
+          setExpandedEventId((currentId) => (currentId === eventId ? null : eventId))
+        }
+      />
     </>
   );
 }

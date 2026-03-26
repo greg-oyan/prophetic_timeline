@@ -1,16 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { eras } from '../data/timeline';
+import React, { useEffect, useRef, useState } from 'react';
 
-export default function Navigation({ currentEra, visible, accentColor }) {
+export default function Navigation({
+  eras,
+  currentEra,
+  currentEvent,
+  visible,
+  accentColor,
+  onJumpToEra,
+}) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    const handleClick = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handleClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setOpen(false);
       }
     };
+
     document.addEventListener('click', handleClick);
     return () => document.removeEventListener('click', handleClick);
   }, []);
@@ -18,32 +25,46 @@ export default function Navigation({ currentEra, visible, accentColor }) {
   return (
     <>
       <nav className={`sticky-nav${visible ? ' visible' : ''}`}>
+        <div className="nav-brand">
+          <span className="nav-brand-mark" style={{ background: accentColor }} />
+          <div className="nav-brand-copy">
+            <strong>{currentEvent?.title}</strong>
+            <span className="nav-brand-meta">{currentEvent?.scripture}</span>
+          </div>
+        </div>
+
         <button
+          type="button"
           className="current-era-btn"
           style={{ color: accentColor }}
           aria-expanded={open}
-          onClick={(e) => {
-            e.stopPropagation();
-            setOpen(!open);
+          onClick={(event) => {
+            event.stopPropagation();
+            setOpen((value) => !value);
           }}
         >
           {currentEra}
         </button>
       </nav>
+
       <div
         ref={dropdownRef}
         className={`era-dropdown${open ? ' open' : ''}`}
         role="menu"
       >
         {eras.map((era) => (
-          <a
+          <button
             key={era.id}
-            href={`#${era.id}`}
+            type="button"
             role="menuitem"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              onJumpToEra(era.id);
+              setOpen(false);
+            }}
           >
-            {era.name} <span className="era-date">{era.dateRange}</span>
-          </a>
+            <span>{era.name}</span>
+            <span className="era-date">{era.dateRange}</span>
+          </button>
         ))}
       </div>
     </>

@@ -1,93 +1,150 @@
-/* ============================================
-   SCROLL PROGRESS BAR
-   ============================================ */
 .scroll-progress {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   height: 3px;
   width: 0%;
+  z-index: 1001;
   background: var(--era-accent);
-  z-index: 10001;
-  transition: background 0.6s ease;
 }
 
-/* ============================================
-   STICKY NAV
-   ============================================ */
 .sticky-nav {
   position: fixed;
-  top: 3px; left: 0; right: 0;
-  height: 44px;
-  background: rgba(10,10,15,0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-  z-index: 10000;
+  top: 18px;
+  left: 24px;
+  right: 24px;
+  z-index: 1000;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  font-family: var(--font-display);
-  transform: translateY(-100%);
-  transition: transform 0.4s ease, background 0.6s ease;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(6, 14, 26, 0.72);
+  backdrop-filter: blur(14px);
+  transform: translateY(-16px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
 }
-.sticky-nav.visible { transform: translateY(0); }
 
-.current-era-btn {
-  background: none;
-  border: none;
-  color: var(--era-accent);
+.sticky-nav.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: rgba(240, 235, 229, 0.9);
+}
+
+.nav-brand-mark {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.28);
+}
+
+.nav-brand-copy {
+  display: grid;
+  min-width: 0;
+}
+
+.nav-brand-copy strong {
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.nav-brand-meta {
+  max-width: 34ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(240, 235, 229, 0.56);
+  font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 4px;
-  transition: background 0.2s, color 0.3s;
 }
-.current-era-btn:hover { background: rgba(255,255,255,0.06); }
+
+.current-era-btn {
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
 
 .era-dropdown {
   position: fixed;
-  top: 47px;
-  left: 20px;
-  background: rgba(14,14,20,0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
-  padding: 8px 0;
-  z-index: 10002;
+  top: 84px;
+  right: 24px;
+  z-index: 1002;
   display: none;
-  min-width: 280px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  min-width: 320px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(6, 13, 24, 0.94);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
 }
-.era-dropdown.open { display: block; }
 
-.era-dropdown a {
+.era-dropdown.open {
   display: block;
-  padding: 10px 20px;
-  color: var(--text-primary);
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  transition: background 0.15s;
 }
-.era-dropdown a:hover {
-  background: rgba(255,255,255,0.06);
+
+.era-dropdown button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 }
+
+.era-dropdown button:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .era-dropdown .era-date {
-  float: right;
   color: var(--text-muted);
-  font-family: var(--font-body);
-  font-weight: 400;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
 }
 
 @media (max-width: 768px) {
-  .sticky-nav { padding: 0 12px; }
-  .era-dropdown { left: 12px; min-width: 260px; }
+  .sticky-nav {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+  }
+
+  .nav-brand {
+    display: none;
+  }
+
+  .era-dropdown {
+    top: 74px;
+    left: 12px;
+    right: 12px;
+    min-width: 0;
+  }
 }
